@@ -8,6 +8,7 @@ type NewsItem = {
   slug: string;
   image?: string;
   link?: string;
+  source?: string;
 };
 
 export async function GET(request: NextRequest) {
@@ -29,6 +30,7 @@ export async function GET(request: NextRequest) {
         headline,
         slug,
         image,
+        source: "kathmandupost",
         link: link?.startsWith("http")
           ? link
           : `https://kathmandupost.com${link}`,
@@ -39,7 +41,6 @@ export async function GET(request: NextRequest) {
       success: true,
       status: 200,
       message: "News Loaded successfully",
-      source: "ekantipur",
       total: newsList.length,
       news: newsList,
     });

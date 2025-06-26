@@ -11,9 +11,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import toast from "react-hot-toast";
 
 type NewsType = {
   headline: string;
+  source?: string;
   slug?: string;
   image?: string;
   link?: string;
@@ -22,23 +24,27 @@ type NewsType = {
 const News = () => {
   const [ktmPosts, setKtmPosts] = useState<NewsType[]>([]);
   const [ekantipurPosts, setEkantipurPosts] = useState<NewsType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
+    const toastId = toast.loading("Fetching News...");
+
     const getNews = async () => {
-      setLoading(true);
       try {
-        const [ktm, ekantipur,] = await Promise.all([
+        const [ktm, ekantipur] = await Promise.all([
           axios.get(`/api/v1/news/ktmpost`),
-          axios.get(`/api/v1/news/ekantipur`)
+          axios.get(`/api/v1/news/ekantipur`),
         ]);
 
         setKtmPosts(ktm.data.news.slice(0, 3));
         setEkantipurPosts(ekantipur.data.news.slice(0, 3));
-      } catch (error) {
+        toast.success("News Loaded Successfully", { id: toastId });
+      } catch (error:any) {
         console.error("Error fetching news:", error);
+        toast.error(error.message);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -46,45 +52,29 @@ const News = () => {
   }, []);
 
   return (
-    <div className="">
-      <div className="w-full py-6 px-4">
-        <div className="flex flex-col items-center text-center space-y-3 max-w-2xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-800 tracking-tight">
-            📰 Explore Latest News
-          </h1>
-          <p className="text-stone-600 text-base sm:text-lg">
-            Choose your preferred{" "}
-            <strong className="text-stone-800 font-semibold">news source</strong>{" "}
-            and <strong className="text-stone-800 font-semibold">category</strong> to stay informed with the latest headlines.
-          </p>
-        </div>
+    <div className="min-h-screen">
+      <div className="flex items-center justify-between p-5 gap-5">
+        <Link href={`/news/ekantipur`} className="mt-auto">
+          <Button className="w-full bg-blue-700 hover:bg-blue-600 text-white">
+            eKantipur
+          </Button>
+        </Link>
+        <Link href={`/news/ktmpost`} className="mt-auto">
+          <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white">
+            KTM Post
+          </Button>
+        </Link>
       </div>
-
-      {loading ? (
-        <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5 px-4">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="flex flex-col space-y-3 justify-center items-center"
-            >
-              <Skeleton className="h-[150px] w-full max-w-sm rounded-xl" />
-              <div className="space-y-2 w-full max-w-sm">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-              </div>
-            </div>
-          ))}
+      {isLoading ? (
+        <div className="h-full flex items-center justify-center">
+          <p className="h-screen text-center mx-auto my-auto flex items-center justify-center text-3xl text-gray-300 text-bold">
+            Loading...
+          </p>
         </div>
       ) : (
         <>
-          {/* Kathmandu Post */}
-          <SectionHeader title="The Kathmandu Post" link="/kathmandupost" tooltip="Go to The Kathmandu Post" />
           <NewsGrid posts={ktmPosts} buttonLabel="Read at The Kathmandu Post" />
-
-          {/* eKantipur */}
-          <SectionHeader title="eKantipur" link="/ekantipur" tooltip="Go to eKantipur" />
           <NewsGrid posts={ekantipurPosts} buttonLabel="Read at eKantipur" />
-
         </>
       )}
     </div>
@@ -131,49 +121,55 @@ const NewsGrid = ({
   posts: NewsType[];
   buttonLabel: string;
 }) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 py-6 max-w-7xl mx-auto">
-    {posts.map(
-      (news) =>
-        news.headline &&
-        news.link &&
-        news.image && (
-          <div
-            key={news.slug ?? news.link}
-            className="flex flex-col bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-          >
-            <img
-              src={news.image}
-              alt="News Image"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4 flex flex-col justify-between h-full">
-              <h2
-                style={{
-                  fontFamily: "'Noto Sans Devanagari', sans-serif",
-                }}
-                className="text-xl font-semibold text-gray-800 mb-2"
-              >
-                {news.headline}
-              </h2>
-              {news.slug && (
-                <p
+  <div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 py-6 max-w-7xl mx-auto">
+      {posts.map(
+        (news) =>
+          news.headline &&
+          news.link &&
+          news.image && (
+            <div
+              key={news.slug ?? news.link}
+              className="flex flex-col bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+            >
+              <img
+                src={news.image}
+                alt="News Image"
+                className="w-full h-48 object-cover"
+              />
+              <div className="absolute p-1 bg-indigo-800 w-fit pr-5 rounded-r-full">
+                <h3 className="text-sm font-semibold text-white">
+                  {news.source}
+                </h3>
+              </div>
+              <div className="p-4 flex flex-col justify-between h-full">
+                <h2
                   style={{
                     fontFamily: "'Noto Sans Devanagari', sans-serif",
                   }}
-                  className="text-sm text-gray-500 border-l-4 border-green-600 pl-3 mb-4"
+                  className="text-xl font-semibold text-gray-800 mb-2"
                 >
-                  {news.slug}
-                </p>
-              )}
-              <Link href={news.link} target="_blank" className="mt-auto">
-                <Button className="w-full bg-blue-700 hover:bg-blue-600 text-white">
-                  {buttonLabel}
-                </Button>
-              </Link>
+                  {news.headline}
+                </h2>
+                {news.slug && (
+                  <p
+                    style={{
+                      fontFamily: "'Noto Sans Devanagari', sans-serif",
+                    }}
+                    className="text-sm text-gray-500 border-l-4 border-green-600 pl-3 mb-4"
+                  >
+                    {news.slug}
+                  </p>
+                )}
+                <Link href={news.link} target="_blank" className="mt-auto">
+                  <Button className="w-full bg-blue-700 hover:bg-blue-600 text-white">
+                    {buttonLabel}
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </div>
-        )
-    )}
+          )
+      )}
+    </div>
   </div>
 );
-

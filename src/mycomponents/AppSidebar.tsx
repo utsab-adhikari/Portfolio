@@ -103,28 +103,25 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 }
 export const Logo = () => {
   return (
-    <a
-      href="#"
-      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
+     <a
+      href="mailto:utsabadhikari075@gmail.com"
+      className="relative z-20 flex flex-col items-center space-y-2 py-4 text-sm font-normal text-black dark:text-white"
     >
-      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+      <img
+        src="https://github.com/shadcn.png" // Replace this with your actual profile image in public folder or hosted image link
+        alt="Utsab Adhikari"
+        className="h-24 w-24 rounded-full border-2 border-indigo-500 object-cover shadow-lg transition hover:scale-105"
+      />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="font-medium whitespace-pre text-black dark:text-white"
+        className="font-semibold text-lg"
       >
-        Acet Labs
+        Utsab Adhikari
       </motion.span>
-    </a>
-  );
-};
-export const LogoIcon = () => {
-  return (
-    <a
-      href="#"
-      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
-    >
-      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+      <span className="text-xs text-neutral-600 dark:text-neutral-400">
+        utsabadhikari075@gmail.com
+      </span>
     </a>
   );
 };

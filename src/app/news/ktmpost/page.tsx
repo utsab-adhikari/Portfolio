@@ -20,7 +20,7 @@ type News = {
   link?: string;
 };
 
-const EkantipurPage = () => {
+const KtmPost = () => {
   const [newses, setNews] = useState<News[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +29,7 @@ const EkantipurPage = () => {
     const toastId = toast.loading("Fetching News...");
     const getNews = async () => {
       try {
-        const response = await axios.get(`/api/v1/news/ekantipur`);
+        const response = await axios.get(`/api/v1/news/ktmpost`);
         setNews(response.data.news);
         toast.success("News Loaded Successfully", { id: toastId });
       } catch (error: any) {
@@ -42,12 +42,13 @@ const EkantipurPage = () => {
 
     getNews();
   }, []);
-
   return (
     <div className="">
       <div>
         <div className="p-4 flex justify-center items-center flex-col text-center">
-          <h1 className="text-2xl font-bold text-indigo-800">eKantipur</h1>
+          <h1 className="text-2xl font-bold text-indigo-800">
+            The Kathmandu Post
+          </h1>
         </div>
       </div>
       {isLoading ? (
@@ -59,43 +60,37 @@ const EkantipurPage = () => {
       ) : (
         <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 px-4 max-w-7xl mx-auto">
           {newses.map((news) => (
-            <div
-              key={news.slug}
-              className="flex flex-col bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-            >
-              {news.image && (
-                <img
-                  src={news.image}
-                  alt="News Image"
-                  className="w-full h-48 object-cover"
-                />
+            <>
+              {news.headline && news.slug && news.image && (
+                <div
+                  key={news.slug}
+                  className="flex flex-col bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                >
+                  {news.image && (
+                    <img
+                      src={news.image}
+                      alt="News Image"
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
+                  <div className="p-4 flex flex-col justify-between h-full">
+                    <h2 className="text-xl font-devanagari font-semibold text-gray-800 mb-2">
+                      {news.headline}
+                    </h2>
+                    <p className="text-sm text-gray-500 border-l-4 border-green-600 pl-3 mb-4">
+                      {news.slug}
+                    </p>
+                    {news.link && (
+                      <Link href={news.link} target="_blank">
+                        <button className="w-full bg-blue-700 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors duration-300">
+                          Read at ktmpost
+                        </button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
               )}
-              <div className="p-4 flex flex-col justify-between h-full">
-                <h2
-                  style={{
-                    fontFamily: "'Noto Sans Devanagari', sans-serif",
-                  }}
-                  className="text-xl font-devanagari font-semibold text-gray-800 mb-2"
-                >
-                  {news.headline}
-                </h2>
-                <p
-                  style={{
-                    fontFamily: "'Noto Sans Devanagari', sans-serif",
-                  }}
-                  className="text-sm text-gray-500 border-l-4 border-green-600 pl-3 mb-4"
-                >
-                  {news.slug}
-                </p>
-                {news.link && (
-                  <Link href={news.link} target="_blank">
-                    <button className="w-full bg-blue-700 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors duration-300">
-                      Read at eKantipur
-                    </button>
-                  </Link>
-                )}
-              </div>
-            </div>
+            </>
           ))}
         </div>
       )}
@@ -103,4 +98,4 @@ const EkantipurPage = () => {
   );
 };
 
-export default EkantipurPage;
+export default KtmPost;
