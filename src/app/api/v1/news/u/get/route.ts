@@ -1,31 +1,40 @@
 import ConnectDB from "@/lib/ConnectDB";
-import Blog from "@/app/models/Blog.model";
+import News from "@/app/models/News.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  await ConnectDB();
-  try {
-    const blogs = await Blog.find({});
+interface NewsBody {
+  headline: string;
+  slug: string;
+  image: string;
+  link: string;
+  source: string;
+}
 
-    if (blogs.length === 0) {
+export async function GET(request: NextRequest) {
+  try {
+    await ConnectDB();
+
+    const savedNews = await News.find({});
+
+    if (!savedNews) {
       return NextResponse.json({
-        message: "Blogs Not found",
         success: false,
-        status: 400,
+        status: 500,
+        message: "News not found",
       });
     }
 
     return NextResponse.json({
-      message: "Blogs Loaded Sucessfully",
       success: true,
       status: 200,
-      blogs,
+      message: "News Loaded Successfully",
+      news: savedNews
     });
   } catch (error: any) {
     return NextResponse.json({
-      message: ["Internal Server Error", error.message],
       success: false,
       status: 500,
+      message: ["Server Error:", error.message],
     });
   }
 }

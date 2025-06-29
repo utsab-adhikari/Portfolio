@@ -1,25 +1,29 @@
 import ConnectDB from "@/lib/ConnectDB";
-import Blog from "@/app/models/Blog.model";
+import Task from "@/app/models/Task.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  context: { params: { taskid: any } }
+) {
   await ConnectDB();
   try {
-    const blogs = await Blog.find({});
+    const { taskid } = await context.params;
+    const task = await Task.findById({ _id: taskid });
 
-    if (blogs.length === 0) {
+    if (!task) {
       return NextResponse.json({
-        message: "Blogs Not found",
+        message: "Task Not found",
         success: false,
         status: 400,
       });
     }
 
     return NextResponse.json({
-      message: "Blogs Loaded Sucessfully",
+      message: "Tasks Loaded Sucessfully",
       success: true,
       status: 200,
-      blogs,
+      task,
     });
   } catch (error: any) {
     return NextResponse.json({

@@ -2,16 +2,11 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { IoIosArrowForward } from "react-icons/io";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
 import toast from "react-hot-toast";
+import NewsGrid from "../NewsGrid";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import NewsNavbar from "../NewsNavbar";
+import { usePathname } from "next/navigation";
 
 type News = {
   headline: string;
@@ -21,6 +16,7 @@ type News = {
 };
 
 const EkantipurPage = () => {
+  const pathname = usePathname();
   const [newses, setNews] = useState<News[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,12 +41,25 @@ const EkantipurPage = () => {
 
   return (
     <div className="">
+      <NewsNavbar pathname={pathname} />
+
       <div>
         <div className="p-4 flex justify-center items-center flex-col text-center">
           <h1 className="text-2xl font-bold text-indigo-800">eKantipur</h1>
         </div>
       </div>
       {isLoading ? (
+        <div className="h-[60vh] flex items-center justify-center">
+          <p className="text-3xl text-gray-400 flex items-center gap-2">
+            <AiOutlineLoading3Quarters className="animate-spin" />
+            Loading...
+          </p>
+        </div>
+      ) : (
+        <NewsGrid posts={newses} buttonLabel="Read at eKantipur" />
+      )}
+
+      {/* {isLoading ? (
         <div className="h-full flex items-center justify-center">
           <p className="h-screen text-center mx-auto my-auto flex items-center justify-center text-3xl text-gray-300 text-bold">
             Loading...
@@ -98,7 +107,7 @@ const EkantipurPage = () => {
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

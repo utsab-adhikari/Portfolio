@@ -1,5 +1,5 @@
 import ConnectDB from "@/lib/ConnectDB";
-import Blog from "@/models/Blog.model";
+import Blog from "@/app/models/Blog.model";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
